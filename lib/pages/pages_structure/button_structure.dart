@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'pop_up_dialog.dart';
 
 abstract class GridButton extends StatelessWidget {
   final String desc;
   final IconData iconData;
+  final Widget popUpDialog;
 
-  const GridButton({super.key, required this.desc, required this.iconData});
-
-  void onPressed();
+  const GridButton({super.key, required this.desc, required this.iconData, required this.popUpDialog});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,9 @@ abstract class GridButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(
-          onPressed: onPressed,
+          onPressed: () {
+            showDialog(context: context, builder: (BuildContext context) => popUpDialog);
+          },
           child: Icon(
             iconData,
             color: Colors.lightBlue,
@@ -35,10 +37,5 @@ abstract class GridButton extends StatelessWidget {
 }
 
 class SampleButton extends GridButton {
-  const SampleButton({super.key}) : super(desc: "Sample", iconData: Icons.abc);
-
-  @override
-  void onPressed() {
-    return;
-  }
+  const SampleButton({super.key}) : super(desc: "Sample", iconData: Icons.abc, popUpDialog: const SamplePopUp());
 }

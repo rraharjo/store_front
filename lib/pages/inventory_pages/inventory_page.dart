@@ -1,3 +1,5 @@
+import 'package:store_front/pages/inventory_pages/inventory_buttons.dart';
+
 import '../pages_structure/page_structure.dart';
 import '../pages_structure/button_structure.dart';
 
@@ -6,7 +8,6 @@ class InventoryGrid extends MainGrid {
 
   @override
   void addButtons() {
-    buttons.add(SampleButton());
-    buttons.add(SampleButton());
+    buttons.add(AddInventoryButton());
   }
 }

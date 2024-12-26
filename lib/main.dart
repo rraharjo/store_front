@@ -33,6 +33,11 @@ void main() {
             minimumSize: Size(50, 50),
           ),
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.blue,
+          ),
+        ),
       ),
       home: HomePage(),
     ),
