@@ -21,7 +21,13 @@ abstract class GridButton extends StatelessWidget {
           ),
         ),
         Center(
-          child: Text(desc),
+          child: Text(
+            desc,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.lightBlue,
+            ),
+          ),
         ),
       ],
     );

@@ -9,5 +9,6 @@ class AssetsGrid extends MainGrid {
     buttons.add(SampleButton());
     buttons.add(SampleButton());
     buttons.add(SampleButton());
+    buttons.add(SampleButton());
   }
 }

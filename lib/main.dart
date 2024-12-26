@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import './pages/home_page.dart';
 
-
 void main() {
   runApp(
     MaterialApp(
@@ -9,18 +8,29 @@ void main() {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
         textTheme: TextTheme(
-            displayLarge: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-            displayMedium: const TextStyle(
-              fontSize: 18,
-            )),
+          displayLarge: const TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+          ),
+          displayMedium: const TextStyle(
+            fontSize: 20,
+          ),
+          displaySmall: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          labelMedium: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          labelSmall: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             iconSize: 30,
             backgroundColor: Colors.white,
-
+            shape: CircleBorder(),
+            minimumSize: Size(50, 50),
           ),
         ),
       ),
