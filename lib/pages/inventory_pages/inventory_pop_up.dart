@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages_structure/pop_up_dialog.dart';
+import '../server_socket.dart';
 
 class AddInventoryPopup extends BasePopup {
   const AddInventoryPopup({super.key}) : super(1);
@@ -50,13 +51,16 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
           },
           child: Text("Cancel"),
         ),
+        //TODO: Handle response from server using socket
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             String command = widget.constructCommand(<String>[_productNameController.value.text, _itemCodeController.value.text, _priceController.value.text]);
             _productNameController.clear();
             _itemCodeController.clear();
             _priceController.clear();
+            String response = await ServerSocket.instance.write(command);
             print(command);
+            //print(response);
           },
           child: Text("Send"),
         ),

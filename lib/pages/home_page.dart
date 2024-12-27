@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'error_page.dart';
 import 'inventory_pages/inventory_page.dart';
 import 'assets_pages/assets_page.dart';
+import 'server_socket.dart';
 import 'dart:io';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +13,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<Socket> serverSocket = Socket.connect("127.0.0.1", 8000);
+  Future<bool> connectStatus = ServerSocket.instance.connect();
+
   int _idx = 0;
   static List<Widget> functionalWidgets = <Widget>[
     InventoryGrid(),
@@ -35,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget builder(BuildContext _, AsyncSnapshot<Socket> snapshot) {
+  Widget builder(BuildContext _, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
         return const ErrorPage("Can't connect to Server");
@@ -64,7 +66,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(future: serverSocket, builder: builder);
-    //return Scaffold();
+    return FutureBuilder(future: connectStatus, builder: builder);
   }
 }
