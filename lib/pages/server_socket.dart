@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 class ServerSocket {
   static ServerSocket? _instance;
   static final String _ipAddress = "127.0.0.1";
   static final int _port = 8000;
+  Completer<String> completer = Completer<String>();
   Socket? serverSock;
 
   ServerSocket._internal();
@@ -14,13 +16,19 @@ class ServerSocket {
     return _instance!;
   }
 
+  Future<String> _read() async {
+    return completer.future;
+  }
+
   Future<bool> connect() async {
     try {
-      if (serverSock == null){
-        serverSock ??= await Socket.connect(_ipAddress, _port);
+      if (serverSock == null) {
+        serverSock = await Socket.connect(_ipAddress, _port);
         serverSock!.listen((data) {
-          String toRet = String.fromCharCodes(data);
-          print(toRet);});
+          if (!completer.isCompleted) {
+            completer.complete(String.fromCharCodes(data));
+          }
+        });
       }
     } catch (_) {
       return false;
@@ -28,25 +36,10 @@ class ServerSocket {
     return true;
   }
 
-  Future<String> _read() async {
-    return "";
-  }
-
-  Future<String> write(String argument) async {
-    String toRet = "";
+  Future<String?> write(String argument) async {
+    String? toRet = "";
     serverSock!.write(argument);
-
-    /*try {
-      Timer timer = Timer(
-          Duration(seconds: 5), () => throw TimeoutException("Server timeout"));
-      toRet = await _read();
-      print('Socket: $toRet');
-      timer.cancel();
-    } on TimeoutException catch (_) {
-      return "Timeout";
-    } catch (_) {
-      return "Timeout";
-    }*/
+    toRet = await _read();
     return toRet;
   }
 }

@@ -54,13 +54,37 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
         //TODO: Handle response from server using socket
         TextButton(
           onPressed: () async {
-            String command = widget.constructCommand(<String>[_productNameController.value.text, _itemCodeController.value.text, _priceController.value.text]);
+            String command = widget.constructCommand(<String>[
+              _productNameController.value.text,
+              _itemCodeController.value.text,
+              _priceController.value.text
+            ]);
             _productNameController.clear();
             _itemCodeController.clear();
             _priceController.clear();
-            String response = await ServerSocket.instance.write(command);
-            print(command);
-            //print(response);
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return FutureBuilder(
+                    future: ServerSocket.instance.write(command),
+                    builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return AlertDialog(
+                          content: Text("waiting"),
+                        );
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return AlertDialog(
+                          content: Text(snapshot.data!),
+                        );
+                      } else {
+                        return AlertDialog(
+                          content: Text("Error"),
+                        );
+                      }
+                    },
+                  );
+                });
           },
           child: Text("Send"),
         ),
