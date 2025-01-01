@@ -6,36 +6,54 @@ abstract class GridButton extends StatelessWidget {
   final IconData iconData;
   final Widget popUpDialog;
 
-  const GridButton({super.key, required this.desc, required this.iconData, required this.popUpDialog});
+  const GridButton(
+      {super.key,
+      required this.desc,
+      required this.iconData,
+      required this.popUpDialog});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            showDialog(context: context, builder: (BuildContext context) => popUpDialog);
-          },
-          child: Icon(
-            iconData,
-            color: Colors.lightBlue,
-          ),
-        ),
-        Center(
-          child: Text(
-            desc,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+    return FittedBox(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => popUpDialog);
+            },
+            child: Icon(
+              iconData,
               color: Colors.lightBlue,
             ),
           ),
-        ),
-      ],
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: 20,
+            ),
+            child: FittedBox(
+              child: Text(
+                desc,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightBlue,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class SampleButton extends GridButton {
-  const SampleButton({super.key}) : super(desc: "Sample", iconData: Icons.abc, popUpDialog: const SamplePopUp());
+  const SampleButton({super.key})
+      : super(
+            desc: "Sample",
+            iconData: Icons.abc,
+            popUpDialog: const SamplePopUp());
 }

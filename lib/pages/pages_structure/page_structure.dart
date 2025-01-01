@@ -15,12 +15,17 @@ abstract class MainGrid extends StatelessWidget {
     return buttons[index];
   }
 
+  int _getItemPerRow(BuildContext context, {double minWidthPerItem = 100}){
+    double contextWidth = MediaQuery.of(context).size.width;
+    return contextWidth ~/ minWidthPerItem;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisSpacing: 30.00,
-      mainAxisSpacing: 30.00,
-      crossAxisCount: 3,
+      crossAxisSpacing: 10.00,
+      mainAxisSpacing: 10.00,
+      crossAxisCount: _getItemPerRow(context),
       children: List.generate(buttons.length, _generateButton),
     );
   }

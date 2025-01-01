@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages_structure/pop_up_dialog.dart';
@@ -54,11 +56,12 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
         //TODO: Handle response from server using socket
         TextButton(
           onPressed: () async {
-            String command = widget.constructCommand(<String>[
-              _productNameController.value.text,
-              _itemCodeController.value.text,
-              _priceController.value.text
-            ]);
+            Map<String, dynamic> request = {
+              "main_command": widget.commandNumber,
+              "product_name": _productNameController.value.text,
+              "item_code": _itemCodeController.value.text,
+              "price": double.parse(_priceController.value.text)
+            };
             _productNameController.clear();
             _itemCodeController.clear();
             _priceController.clear();
@@ -66,7 +69,7 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
                 context: context,
                 builder: (BuildContext context) {
                   return FutureBuilder(
-                    future: ServerSocket.instance.write(command),
+                    future: ServerSocket.instance.write(jsonEncode(request)),
                     builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return AlertDialog(
