@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages_structure/button_structure.dart';
-import 'inventory_pop_up.dart';
+import 'add_inventory_popup.dart';
 
 class AddInventoryButton extends GridButton {
   const AddInventoryButton({super.key})

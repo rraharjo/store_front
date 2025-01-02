@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import './pages/home_page.dart';
+import './pages/constant.dart';
 
 void main() {
   runApp(
     MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
+        colorScheme: ColorScheme.fromSeed(seedColor: themeColor),
         textTheme: TextTheme(
           displayLarge: const TextStyle(
             fontSize: 48,

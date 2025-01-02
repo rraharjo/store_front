@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../pages_structure/pop_up_dialog.dart';
 import '../server_socket.dart';
+import '../pages_structure/async_state.dart';
 
 class AddInventoryPopup extends BasePopup {
   const AddInventoryPopup({super.key}) : super(1);
@@ -88,7 +89,6 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
           },
           child: Text("Cancel"),
         ),
-        //TODO: Handle response from server using socket
         TextButton(
           onPressed: () async {
             bool isValid = validate();
@@ -119,17 +119,20 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
                     future: ServerSocket.instance.write(jsonEncode(request)),
                     builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return AlertDialog(
-                          content: Text("waiting"),
+                        return SimpleDialog(
+                          backgroundColor: Colors.white,
+                          children: const [AsyncWaiting()],
                         );
                       } else if (snapshot.connectionState ==
                           ConnectionState.done) {
-                        return AlertDialog(
-                          content: Text(snapshot.data!),
+                        return SimpleDialog(
+                          backgroundColor: Colors.white,
+                          children: const [AsyncDone()],
                         );
                       } else {
-                        return AlertDialog(
-                          content: Text("Error"),
+                        return SimpleDialog(
+                          backgroundColor: Colors.white,
+                          children: const [AsyncFailed()],
                         );
                       }
                     },
