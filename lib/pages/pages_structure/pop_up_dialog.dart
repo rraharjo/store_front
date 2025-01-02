@@ -8,7 +8,7 @@ abstract class BasePopup extends StatefulWidget {
   String constructCommand(List<String> arguments){
     String toRet = '$commandNumber ';
     for (String element in arguments) {
-      toRet += '\"$element\" ';
+      toRet += '"$element" ';
     }
     toRet += commandDelimiter;
     return toRet;

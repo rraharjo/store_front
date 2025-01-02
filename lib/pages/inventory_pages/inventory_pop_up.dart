@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../pages_structure/pop_up_dialog.dart';
 import '../server_socket.dart';
 
@@ -16,6 +15,30 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _itemCodeController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  String _errorMsg = "";
+  bool _visibleError = false;
+
+  bool validate() {
+    if (_productNameController.value.text.isEmpty) {
+      _errorMsg = "Product cannot be empty";
+      return false;
+    }
+    if (_priceController.value.text.isEmpty) {
+      _errorMsg = "Price cannot be empty";
+      return false;
+    }
+    try {
+      double res = double.parse(_priceController.value.text);
+      if (res < 0.0) {
+        _errorMsg = "Price cannot be lower than 0";
+        return false;
+      }
+    } catch (_) {
+      _errorMsg = "Price is invalid";
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +65,19 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
             decoration: InputDecoration(
               hintText: 'Enter product price',
             ),
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
+          ),
+          Visibility(
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            visible: _visibleError,
+            child: Text(
+              _errorMsg,
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -56,6 +91,18 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
         //TODO: Handle response from server using socket
         TextButton(
           onPressed: () async {
+            bool isValid = validate();
+            if (isValid) {
+              setState(() {
+                _visibleError = false;
+              });
+            } else {
+              setState(() {
+                _errorMsg = _errorMsg;
+                _visibleError = true;
+              });
+              return;
+            }
             Map<String, dynamic> request = {
               "main_command": widget.commandNumber,
               "product_name": _productNameController.value.text,

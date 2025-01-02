@@ -3,7 +3,6 @@ import 'error_page.dart';
 import 'inventory_pages/inventory_page.dart';
 import 'assets_pages/assets_page.dart';
 import 'server_socket.dart';
-import 'dart:io';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../pages_structure/pop_up_dialog.dart';
 import '../pages_structure/button_structure.dart';
 import 'inventory_pop_up.dart';
 
