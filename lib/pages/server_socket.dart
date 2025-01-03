@@ -15,6 +15,7 @@ class ServerSocket {
     return _instance!;
   }
 
+  //TODO Fix socket
   Future<String> _read() async {
     return completer.future;
   }

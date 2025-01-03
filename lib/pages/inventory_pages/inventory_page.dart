@@ -8,5 +8,6 @@ class InventoryGrid extends MainGrid {
   @override
   void addButtons() {
     buttons.add(AddInventoryButton());
+    buttons.add(ListInventoryButton());
   }
 }
