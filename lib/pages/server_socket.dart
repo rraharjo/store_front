@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 String sampleJson = "{\"status\":true,\"body\":{\"data\":[]}}";
 
 class ServerSocket {
@@ -26,14 +24,12 @@ class ServerSocket {
       toRet = jsonEncode(errorMsg);
     });
     while (toRet == "") {
-      await Future.delayed(
-        Duration(milliseconds: 250),
-        () {
-          toRet = toRet == "" ? sBuffer.toString() : toRet;
-        },
-      );
+      if (sBuffer.isNotEmpty){
+        toRet = sBuffer.toString();
+        sBuffer.clear();
+      }
+      await Future.delayed(Duration(milliseconds: 250));
     }
-    sBuffer.clear();
     if (failingTimer.isActive) {
       failingTimer.cancel();
     }

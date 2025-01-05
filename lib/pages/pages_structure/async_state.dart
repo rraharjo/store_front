@@ -87,7 +87,7 @@ class AsyncWaiting extends StatelessWidget {
           ],
         ),
         Text(
-          "Processing!",
+          "Processing...",
           style: TextStyle(
             color: themeColor,
             fontWeight: FontWeight.bold,

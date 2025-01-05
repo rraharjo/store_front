@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -42,13 +41,8 @@ class _InventoryListState extends State<InventoryList> {
           }
           List<dynamic> items = jsonResponse["body"]["data"];
           return AlertDialog(
-            content: SingleChildScrollView(
-              child: Column(
-                children: List<Widget>.generate(items.length, (idx) {
-                  return InventoryTile(items[idx]);
-                }),
-              ),
-            ),
+            backgroundColor: Colors.white,
+            content: InventoriesExpansionList(items),
           );
         } else {
           return SimpleDialog(
@@ -57,6 +51,84 @@ class _InventoryListState extends State<InventoryList> {
           );
         }
       },
+    );
+  }
+}
+
+class InventoriesExpansionList extends StatefulWidget {
+  final List<dynamic> inventories;
+
+  const InventoriesExpansionList(this.inventories, {super.key});
+
+  @override
+  State<InventoriesExpansionList> createState() =>
+      _InventoriesExpansionListState();
+}
+
+class _InventoriesExpansionListState extends State<InventoriesExpansionList> {
+  final List<bool> _isOpen = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: ExpansionPanelList(
+        dividerColor: themeColor,
+        children: List<ExpansionPanel>.generate(
+          widget.inventories.length,
+          (idx) {
+            dynamic curItem = widget.inventories[idx];
+            _isOpen.add(false);
+            return ExpansionPanel(
+              backgroundColor: Colors.white,
+              headerBuilder: (context, isOpen) {
+                if (!isOpen) {
+                  return ListTile(
+                    title: Text(
+                      curItem["name"],
+                      style: h2,
+                    ),
+                    subtitle: Text(
+                      "Price: \$${curItem["price"].toString()}",
+                      style: informationTextSytle,
+                    ),
+                  );
+                }
+                return Text(
+                  curItem["name"],
+                  style: h2,
+                );
+              },
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Database Code: ${curItem["dbcode"]}",
+                    style: informationTextSytle,
+                  ),
+                  Text(
+                    "Item Code: ${curItem["item_code"]}",
+                    style: informationTextSytle,
+                  ),
+                  Text(
+                    "Name: ${curItem["name"]}",
+                    style: informationTextSytle,
+                  ),
+                  Text(
+                    "Price: ${curItem["price"].toString()}",
+                    style: informationTextSytle,
+                  ),
+                ],
+              ),
+              isExpanded: _isOpen[idx],
+            );
+          },
+        ),
+        expansionCallback: (idx, isOpen) {
+          setState(() {
+            _isOpen[idx] = !_isOpen[idx];
+          });
+        },
+      ),
     );
   }
 }
