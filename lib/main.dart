@@ -36,7 +36,7 @@ void main() {
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.white,
           ),
         ),
       ),

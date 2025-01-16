@@ -132,32 +132,3 @@ class _InventoriesExpansionListState extends State<InventoriesExpansionList> {
     );
   }
 }
-
-class InventoryTile extends StatelessWidget {
-  final dynamic invInfo;
-
-  const InventoryTile(this.invInfo, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    try {
-      return ListTile(
-        title: Text(
-          invInfo["name"],
-          style: TextStyle(
-            color: themeColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          invInfo["price"].toString(),
-          style: TextStyle(color: themeColor),
-        ),
-        trailing:
-            ElevatedButton(onPressed: () {}, child: Icon(Icons.more_vert)),
-      );
-    } catch (e) {
-      return ListTile();
-    }
-  }
-}
