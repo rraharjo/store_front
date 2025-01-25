@@ -39,6 +39,7 @@ void main() {
             backgroundColor: Colors.white,
           ),
         ),
+        appBarTheme: AppBarTheme(backgroundColor: themeColor)
       ),
       home: HomePage(),
     ),

@@ -1,12 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../pages_structure/pop_up_dialog.dart';
+import 'package:store_front/pages/pages_structure/page_structure.dart';
+import '../pages_structure/commands_page.dart';
 import '../server_socket.dart';
 import '../pages_structure/async_state.dart';
 import '../constant.dart';
 
-class PurchaseInventoryPopup extends BasePopup {
+class PurchaseInventories extends BasicPage {
+  const PurchaseInventories({super.key}) : super('Purchase Inventories', const PurchaseInventoryPopup());
+}
+
+
+class PurchaseInventoryPopup extends HasCommand {
   const PurchaseInventoryPopup({super.key}) : super(2);
 
   @override
@@ -24,31 +30,16 @@ class _PurchaseInventoryPopupState extends State<PurchaseInventoryPopup> {
       future: items,
       builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SimpleDialog(
-            backgroundColor: Colors.white,
-            children: [
-              AsyncWaiting(),
-            ],
-          );
+          return AsyncWaiting();
         } else if (snapshot.connectionState == ConnectionState.done) {
           final Map<String, dynamic> response = jsonDecode(snapshot.data!);
           if (response["status"] == false) {
-            return const SimpleDialog(
-              backgroundColor: Colors.white,
-              children: [
-                AsyncFailed(),
-              ],
-            );
+            return AsyncFailed();
           }
           List<dynamic> inventories = response["body"]["data"];
           return InvPopup(inventories);
         } else {
-          return const SimpleDialog(
-            backgroundColor: Colors.white,
-            children: [
-              AsyncFailed(),
-            ],
-          );
+          return AsyncFailed();
         }
       },
     );
@@ -81,8 +72,7 @@ class _InvPopupState extends State<InvPopup> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      content: Column(
+    return Column(
         spacing: 2.5,
         children: <Widget>[
           SearchAnchor.bar(
@@ -121,30 +111,18 @@ class _InvPopupState extends State<InvPopup> {
               });
             },
           ),
+          Text(
+            "Total: \$$total",
+            style: informationTextSytle,
+          ),
           FittedBox(
             fit: BoxFit.contain,
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              children: <Widget>[
-                Container(
-                  height: 50,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-                Container(
-                  height: 50,
-                  color: Colors.amber[100],
-                  child: const Center(child: Text('Entry C')),
-                ),
-              ],
+            child: TextButton(
+              onHover: (hover) {},
+              onPressed: () {},
+              child: Text("Make Purchase!", style: h2),
             ),
-          )
+          ),
           //TODO: Rendering error
           /*ListView(
               children: chosenInventories.map(
@@ -165,21 +143,6 @@ class _InvPopupState extends State<InvPopup> {
                 },
               ).toList()),*/
         ],
-      ),
-      actions: [
-        Text(
-          "Total: \$$total",
-          style: informationTextSytle,
-        ),
-        FittedBox(
-          fit: BoxFit.contain,
-          child: TextButton(
-            onHover: (hover) {},
-            onPressed: () {},
-            child: Text("Make Purchase!", style: h2),
-          ),
-        ),
-      ],
-    );
+      );
   }
 }

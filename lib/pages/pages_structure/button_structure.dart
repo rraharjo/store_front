@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'pop_up_dialog.dart';
+import 'package:store_front/pages/pages_structure/page_structure.dart';
+import 'commands_page.dart';
 
 abstract class GridButton extends StatelessWidget {
   final String desc;
   final IconData iconData;
-  final Widget popUpDialog;
+  final Widget nextPage;
 
   const GridButton(
       {super.key,
       required this.desc,
       required this.iconData,
-      required this.popUpDialog});
+      required this.nextPage});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +21,7 @@ abstract class GridButton extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => popUpDialog);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => nextPage));
             },
             child: Icon(
               iconData,
@@ -55,5 +54,5 @@ class SampleButton extends GridButton {
       : super(
             desc: "Sample",
             iconData: Icons.abc,
-            popUpDialog: const SamplePopUp());
+            nextPage: const SampleBasicPage());
 }

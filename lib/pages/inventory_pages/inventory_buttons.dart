@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_front/pages/pages_structure/page_structure.dart';
 import '../pages_structure/button_structure.dart';
 import 'add_inventory_popup.dart';
 import 'list_inventory_popup.dart';
@@ -9,7 +10,7 @@ class AddInventoryButton extends GridButton {
       : super(
       desc: 'Add new\ninventory',
       iconData: Icons.add_box_sharp,
-      popUpDialog: const AddInventoryPopup());
+      nextPage: const AddInventory());
 }
 
 class ListInventoryButton extends GridButton {
@@ -17,12 +18,12 @@ class ListInventoryButton extends GridButton {
       : super(
       desc: 'Inventory\nList',
       iconData: Icons.inventory_2_outlined,
-      popUpDialog: const InventoryList());
+      nextPage: const InventoriesList());
 }
 
 class PurchaseInventoryButton extends GridButton {
   const PurchaseInventoryButton({super.key}) : super(
     desc: 'Purchase\nInventories',
     iconData: Icons.monetization_on_outlined,
-    popUpDialog: const PurchaseInventoryPopup(),);
+    nextPage: const PurchaseInventories(),);
 }

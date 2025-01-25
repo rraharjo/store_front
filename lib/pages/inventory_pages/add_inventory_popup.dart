@@ -1,18 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import '../pages_structure/pop_up_dialog.dart';
+import 'package:store_front/pages/pages_structure/page_structure.dart';
+import '../pages_structure/commands_page.dart';
 import '../server_socket.dart';
 import '../pages_structure/async_state.dart';
 
-class AddInventoryPopup extends BasePopup {
-  const AddInventoryPopup({super.key}) : super(1);
-
-  @override
-  State<AddInventoryPopup> createState() => _AddInventoryPopupState();
+class AddInventory extends BasicPage {
+  const AddInventory({super.key}) : super("Add Inventory", const AddInventoryContent());
 }
 
-class _AddInventoryPopupState extends State<AddInventoryPopup> {
+class AddInventoryContent extends HasCommand {
+  const AddInventoryContent({super.key}) : super(1);
+
+  @override
+  State<AddInventoryContent> createState() => _AddInventoryPopupState();
+}
+
+class _AddInventoryPopupState extends State<AddInventoryContent> {
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _itemCodeController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -43,30 +48,14 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      content: Column(
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 50, 20, 0),
+      child: Column(
         spacing: 2.5,
         children: [
-          TextField(
-            controller: _productNameController,
-            decoration: InputDecoration(
-              hintText: 'Enter product name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          TextField(
-            controller: _itemCodeController,
-            decoration: InputDecoration(
-              hintText: 'Enter item code',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          TextField(
-            controller: _priceController,
-            decoration: InputDecoration(
-              hintText: 'Enter product price',
-            ),
-          ),
+          SimpleInputField('Enter product name', _productNameController),
+          SimpleInputField('Enter item code', _itemCodeController),
+          SimpleInputField('Enter price', _priceController),
           Visibility(
             maintainSize: true,
             maintainAnimation: true,
@@ -80,68 +69,60 @@ class _AddInventoryPopupState extends State<AddInventoryPopup> {
               ),
             ),
           ),
+          TextButton(
+            onPressed: () async {
+              bool isValid = validate();
+              if (isValid) {
+                setState(() {
+                  _visibleError = false;
+                });
+              } else {
+                setState(() {
+                  _errorMsg = _errorMsg;
+                  _visibleError = true;
+                });
+                return;
+              }
+              Map<String, dynamic> request = {
+                "main_command": widget.commandNumber,
+                "product_name": _productNameController.value.text,
+                "item_code": _itemCodeController.value.text,
+                "price": double.parse(_priceController.value.text)
+              };
+              _productNameController.clear();
+              _itemCodeController.clear();
+              _priceController.clear();
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return FutureBuilder(
+                      future: ServerSocket.instance.write(jsonEncode(request)),
+                      builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return SimpleDialog(
+                            backgroundColor: Colors.white,
+                            children: const [AsyncWaiting()],
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.done) {
+                          return SimpleDialog(
+                            backgroundColor: Colors.white,
+                            children: const [AsyncDone()],
+                          );
+                        } else {
+                          return SimpleDialog(
+                            backgroundColor: Colors.white,
+                            children: const [AsyncFailed()],
+                          );
+                        }
+                      },
+                    );
+                  });
+            },
+            child: Text("Send"),
+          )
         ],
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text("Cancel"),
-        ),
-        TextButton(
-          onPressed: () async {
-            bool isValid = validate();
-            if (isValid) {
-              setState(() {
-                _visibleError = false;
-              });
-            } else {
-              setState(() {
-                _errorMsg = _errorMsg;
-                _visibleError = true;
-              });
-              return;
-            }
-            Map<String, dynamic> request = {
-              "main_command": widget.commandNumber,
-              "product_name": _productNameController.value.text,
-              "item_code": _itemCodeController.value.text,
-              "price": double.parse(_priceController.value.text)
-            };
-            _productNameController.clear();
-            _itemCodeController.clear();
-            _priceController.clear();
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return FutureBuilder(
-                    future: ServerSocket.instance.write(jsonEncode(request)),
-                    builder: (BuildContext _, AsyncSnapshot<String?> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return SimpleDialog(
-                          backgroundColor: Colors.white,
-                          children: const [AsyncWaiting()],
-                        );
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.done) {
-                        return SimpleDialog(
-                          backgroundColor: Colors.white,
-                          children: const [AsyncDone()],
-                        );
-                      } else {
-                        return SimpleDialog(
-                          backgroundColor: Colors.white,
-                          children: const [AsyncFailed()],
-                        );
-                      }
-                    },
-                  );
-                });
-          },
-          child: Text("Send"),
-        ),
-      ],
     );
   }
 }
