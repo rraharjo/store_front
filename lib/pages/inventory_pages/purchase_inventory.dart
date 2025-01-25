@@ -8,9 +8,9 @@ import '../pages_structure/async_state.dart';
 import '../constant.dart';
 
 class PurchaseInventories extends BasicPage {
-  const PurchaseInventories({super.key}) : super('Purchase Inventories', const PurchaseInventoryPopup());
+  const PurchaseInventories({super.key})
+      : super('Purchase Inventories', const PurchaseInventoryPopup());
 }
-
 
 class PurchaseInventoryPopup extends HasCommand {
   const PurchaseInventoryPopup({super.key}) : super(2);
@@ -72,15 +72,19 @@ class _InvPopupState extends State<InvPopup> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+      child: Column(
         spacing: 2.5,
         children: <Widget>[
           SearchAnchor.bar(
+            barHintText: "Search name, unique code",
             searchController: _searchController,
             suggestionsBuilder: (context, controller) {
               String input = controller.value.text;
               return widget.inventories.where((item) {
-                return item["name"].contains(input);
+                return item["name"].contains(input) ||
+                    item["dbcode"].contains(input);
               }).map((item) {
                 return TextButton(
                   clipBehavior: Clip.hardEdge,
@@ -101,6 +105,7 @@ class _InvPopupState extends State<InvPopup> {
                         "price_controller": priceController,
                         "qty_controller": qtyController,
                       });
+                      _searchController.closeView(null);
                     });
                   },
                   child: Text(
@@ -111,11 +116,121 @@ class _InvPopupState extends State<InvPopup> {
               });
             },
           ),
+          //TODO: Fix masking
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: SingleChildScrollView(
+              child: Column(
+                children: List<Widget>.generate(
+                  chosenInventories.length,
+                  (idx) {
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: ListTile(
+                        tileColor: Colors.white,
+                        leading: Text(
+                          "${idx + 1}",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        textColor: themeColor,
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              chosenInventories[idx]["name"],
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(chosenInventories[idx]["dbcode"]),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text("Qty "),
+                                SizedBox(
+                                  width: 40.00,
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                    ),
+                                    keyboardType: TextInputType.numberWithOptions(
+                                      signed: true,
+                                      decimal: true,
+                                    ),
+                                    controller: chosenInventories[idx]
+                                        ["price_controller"],
+                                    onChanged: (value) {
+                                      int? i = int.tryParse(value);
+                                      setState(() {
+                                        total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                        if (i == null || i < 0) {
+                                          chosenInventories[idx]["qty"] = 0;
+                                        } else {
+                                          chosenInventories[idx]["qty"] = i;
+                                        }
+                                        total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Text("\$ "),
+                                SizedBox(
+                                  width: 40.00,
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                    ),
+                                    controller: chosenInventories[idx]
+                                        ["qty_controller"],
+                                    onChanged: (value) {
+                                      double? d = double.tryParse(value);
+                                      setState(() {
+                                        total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                        if (d == null || d < 0.0) {
+                                          chosenInventories[idx]["price"] = 0.0;
+                                        } else {
+                                          chosenInventories[idx]["price"] = d;
+                                        }
+                                        total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              "Total: \$${chosenInventories[idx]["price"] * chosenInventories[idx]["qty"]}",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                              chosenInventories.removeAt(idx);
+                            });
+                          },
+                          icon: Icon(
+                            Icons.delete_rounded,
+                            color: themeColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
           Text(
             "Total: \$$total",
-            style: informationTextSytle,
+            style: TextStyle(fontWeight: FontWeight.bold, color: themeColor),
           ),
           FittedBox(
+            //TODO: execute the order
             fit: BoxFit.contain,
             child: TextButton(
               onHover: (hover) {},
@@ -123,26 +238,8 @@ class _InvPopupState extends State<InvPopup> {
               child: Text("Make Purchase!", style: h2),
             ),
           ),
-          //TODO: Rendering error
-          /*ListView(
-              children: chosenInventories.map(
-                (item) {
-                  return SizedBox(
-                    child: ListTile(
-                      isThreeLine: true,
-                      title: Text(item["name"]),
-                      subtitle: Text(item["dbcode"]),
-                      trailing: Row(
-                        children: [
-                          Text("qty"),
-                          Text("price"),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ).toList()),*/
         ],
-      );
+      ),
+    );
   }
 }

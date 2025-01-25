@@ -31,35 +31,47 @@ abstract class MainGrid extends StatelessWidget {
 }
 
 class BasicPage extends StatelessWidget {
-  final String title;
-  final Widget content;
+  final String _title;
+  final Widget _content;
 
-  const BasicPage(this.title, this.content, {super.key});
+  const BasicPage(this._title, this._content, {super.key});
+
+  AppBar getAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        _title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(Icons.arrow_back),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-      ),
-      body: content,
+      appBar: getAppBar(context),
+      body: _content,
     );
   }
 }
 
-class SampleBasicPage extends BasicPage{
-  const SampleBasicPage({super.key}) : super("sample", const Text("This is a sample"));
+class SampleBasicPage extends BasicPage {
+  const SampleBasicPage({super.key})
+      : super("sample", const Text("This is a sample"));
 }
 
 class SimpleInputField extends StatelessWidget {
   final TextEditingController _controller;
   final String hintText;
+
   const SimpleInputField(this.hintText, this._controller, {super.key});
 
   @override
@@ -69,10 +81,8 @@ class SimpleInputField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25))
-        ),
+            borderRadius: BorderRadius.all(Radius.circular(25))),
       ),
-
     );
   }
 }
