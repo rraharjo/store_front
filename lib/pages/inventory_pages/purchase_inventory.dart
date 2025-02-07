@@ -57,6 +57,7 @@ class InvPopup extends StatefulWidget {
 
 class _InvPopupState extends State<InvPopup> {
   final SearchController _searchController = SearchController();
+  //TODO: fix this to Map
   List<dynamic> chosenInventories =
       <dynamic>[]; //{dbcode, name, price, qty, Controller1, Controller2}
   double total = 0.0;
@@ -116,7 +117,6 @@ class _InvPopupState extends State<InvPopup> {
               });
             },
           ),
-          //TODO: Fix masking
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.7,
             child: SingleChildScrollView(
@@ -124,98 +124,100 @@ class _InvPopupState extends State<InvPopup> {
                 children: List<Widget>.generate(
                   chosenInventories.length,
                   (idx) {
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      child: ListTile(
-                        tileColor: Colors.white,
-                        leading: Text(
-                          "${idx + 1}",
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        textColor: themeColor,
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              chosenInventories[idx]["name"],
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(chosenInventories[idx]["dbcode"]),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text("Qty "),
-                                SizedBox(
-                                  width: 40.00,
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      isDense: true,
+                    return Material(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: ListTile(
+                          tileColor: Colors.white,
+                          leading: Text(
+                            "${idx + 1}",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          textColor: themeColor,
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                chosenInventories[idx]["name"],
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(chosenInventories[idx]["dbcode"]),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text("Qty "),
+                                  SizedBox(
+                                    width: 40.00,
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                      ),
+                                      keyboardType: TextInputType.numberWithOptions(
+                                        signed: true,
+                                        decimal: true,
+                                      ),
+                                      controller: chosenInventories[idx]
+                                          ["price_controller"],
+                                      onChanged: (value) {
+                                        int? i = int.tryParse(value);
+                                        setState(() {
+                                          total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                          if (i == null || i < 0) {
+                                            chosenInventories[idx]["qty"] = 0;
+                                          } else {
+                                            chosenInventories[idx]["qty"] = i;
+                                          }
+                                          total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                        });
+                                      },
                                     ),
-                                    keyboardType: TextInputType.numberWithOptions(
-                                      signed: true,
-                                      decimal: true,
-                                    ),
-                                    controller: chosenInventories[idx]
-                                        ["price_controller"],
-                                    onChanged: (value) {
-                                      int? i = int.tryParse(value);
-                                      setState(() {
-                                        total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
-                                        if (i == null || i < 0) {
-                                          chosenInventories[idx]["qty"] = 0;
-                                        } else {
-                                          chosenInventories[idx]["qty"] = i;
-                                        }
-                                        total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
-                                      });
-                                    },
                                   ),
-                                ),
-                                Text("\$ "),
-                                SizedBox(
-                                  width: 40.00,
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      isDense: true,
+                                  Text("\$ "),
+                                  SizedBox(
+                                    width: 40.00,
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                      ),
+                                      controller: chosenInventories[idx]
+                                          ["qty_controller"],
+                                      onChanged: (value) {
+                                        double? d = double.tryParse(value);
+                                        setState(() {
+                                          total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                          if (d == null || d < 0.0) {
+                                            chosenInventories[idx]["price"] = 0.0;
+                                          } else {
+                                            chosenInventories[idx]["price"] = d;
+                                          }
+                                          total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                        });
+                                      },
                                     ),
-                                    controller: chosenInventories[idx]
-                                        ["qty_controller"],
-                                    onChanged: (value) {
-                                      double? d = double.tryParse(value);
-                                      setState(() {
-                                        total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
-                                        if (d == null || d < 0.0) {
-                                          chosenInventories[idx]["price"] = 0.0;
-                                        } else {
-                                          chosenInventories[idx]["price"] = d;
-                                        }
-                                        total += chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
-                                      });
-                                    },
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                              Text(
+                                "Total: \$${chosenInventories[idx]["price"] * chosenInventories[idx]["qty"]}",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
+                                chosenInventories.removeAt(idx);
+                              });
+                            },
+                            icon: Icon(
+                              Icons.delete_rounded,
+                              color: themeColor,
                             ),
-                            Text(
-                              "Total: \$${chosenInventories[idx]["price"] * chosenInventories[idx]["qty"]}",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              total -= chosenInventories[idx]["price"] * chosenInventories[idx]["qty"];
-                              chosenInventories.removeAt(idx);
-                            });
-                          },
-                          icon: Icon(
-                            Icons.delete_rounded,
-                            color: themeColor,
                           ),
                         ),
                       ),
@@ -234,12 +236,46 @@ class _InvPopupState extends State<InvPopup> {
             fit: BoxFit.contain,
             child: TextButton(
               onHover: (hover) {},
-              onPressed: () {},
+              onPressed: () {
+              },
               child: Text("Make Purchase!", style: h2),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+
+//TODO fix confirmation page
+class PurchaseConfirmation extends StatefulWidget {
+  final Map<String, dynamic> summary;
+  const PurchaseConfirmation(this.summary,  {super.key});
+
+  @override
+  State<PurchaseConfirmation> createState() => _PurchaseConfirmationState();
+}
+
+class _PurchaseConfirmationState extends State<PurchaseConfirmation> {
+  List<Widget> generateList(){
+    List<Widget> toRet = List<Widget>.empty();
+    widget.summary.forEach((k, v) {
+      toRet.add(ListTile(
+
+      ));
+    });
+    return List<Widget>.empty();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(onPressed: () {Navigator.of(context).pop();}, icon: Icon(Icons.arrow_back)),
+      ),
+      persistentFooterButtons: [
+
+      ],
     );
   }
 }
