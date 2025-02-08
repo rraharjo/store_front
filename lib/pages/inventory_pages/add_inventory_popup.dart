@@ -10,8 +10,12 @@ class AddInventory extends BasicPage {
   const AddInventory({super.key}) : super("Add Inventory", const AddInventoryContent());
 }
 
-class AddInventoryContent extends HasCommand {
-  const AddInventoryContent({super.key}) : super(1);
+class AddInventoryContent extends StatefulWidget implements HasCommand {
+  const AddInventoryContent({super.key});
+
+  @override int getCommand() {
+    return 1;
+  }
 
   @override
   State<AddInventoryContent> createState() => _AddInventoryPopupState();
@@ -84,7 +88,7 @@ class _AddInventoryPopupState extends State<AddInventoryContent> {
                 return;
               }
               Map<String, dynamic> request = {
-                "main_command": widget.commandNumber,
+                "main_command": widget.getCommand(),
                 "product_name": _productNameController.value.text,
                 "item_code": _itemCodeController.value.text,
                 "price": double.parse(_priceController.value.text)

@@ -1,16 +1,18 @@
-import 'package:flutter/material.dart';
+interface class HasCommand {
+  const HasCommand();
 
-abstract class HasCommand extends StatefulWidget {
-  final int commandNumber;
-  final String commandDelimiter = 'ENDCMD';
-  const HasCommand(this.commandNumber, {super.key});
-
-  String constructCommand(List<String> arguments){
-    String toRet = '$commandNumber ';
+  /*String constructCommand(List<String> arguments){
+    final String commandDelimiter = 'ENDCMD';
+    String toRet = 'Command number here ';
     for (String element in arguments) {
       toRet += '"$element" ';
     }
     toRet += commandDelimiter;
     return toRet;
+  }*/
+
+  int getCommand(){
+    return -1;
   }
+
 }

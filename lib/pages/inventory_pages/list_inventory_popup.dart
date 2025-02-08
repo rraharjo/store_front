@@ -15,8 +15,13 @@ class InventoriesList extends BasicPage {
         );
 }
 
-class InventoryListContent extends HasCommand {
-  const InventoryListContent({super.key}) : super(8);
+class InventoryListContent extends StatefulWidget implements HasCommand {
+  const InventoryListContent({super.key});
+
+  @override
+  int getCommand(){
+    return 8;
+  }
 
   @override
   State<InventoryListContent> createState() => _InventoryListState();
@@ -26,7 +31,7 @@ class _InventoryListState extends State<InventoryListContent> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> request = {
-      "main_command": widget.commandNumber,
+      "main_command": widget.getCommand(),
     };
 
     return FutureBuilder(
