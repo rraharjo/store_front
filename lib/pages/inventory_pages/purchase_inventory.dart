@@ -253,7 +253,7 @@ class _InvPopupState extends State<InvPopup> {
                       builder: (context) =>
                           PurchaseConfirmPage(chosenInventories)),
                 );
-                if (fromNext != null){
+                if (fromNext != null) {
                   setState(() {
                     chosenInventories.clear();
                     total = 0;
@@ -299,6 +299,7 @@ class PurchaseConfirmation extends StatefulWidget implements HasCommand {
 }
 
 class _PurchaseConfirmationState extends State<PurchaseConfirmation> {
+  String buttonText = "Confirm!";
   double paidCash = 0.0;
   double total = 0;
   Map<String, dynamic> request = <String, dynamic>{};
@@ -450,62 +451,51 @@ class _PurchaseConfirmationState extends State<PurchaseConfirmation> {
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
           child: TextButton(
+            onPressed: () async {
+              setState(() {
+                buttonText = "Executing...";
+              });
+              double? paidCash;
+              paidCash = double.tryParse(paidCashController.value.text);
+              if (paidCash == null || paidCash < 0 || paidCash > total) {
+                setState(() {
+                  buttonText = "Invalid number, try again...";
+                });
+                return;
+              }
+              request["paid_cash"] = paidCash;
+              String requestString = jsonEncode(request);
+              String? result = await ServerSocket.instance.write(requestString);
+              if (result != null){
+                Map<String, dynamic> response = jsonDecode(result);
+                if (response["status"]){
+                  setState(() {
+                    buttonText = "Success!";
+                  });
+                  Navigator.pop(context, "reset");
+                  return;
+                }
+                else{
+                  setState(() {
+                    buttonText = "Failed, try again...";
+                  });
+                  return;
+                }
+              }
+              else{
+                setState(() {
+                  buttonText = "Failed, try again...";
+                });
+                return;
+              }
+            },
             child: Text(
-              "Confirm!",
+              buttonText,
               style: TextStyle(
                 color: themeColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onPressed: () {
-              double? paidCash;
-              paidCash = double.tryParse(paidCashController.value.text);
-              if (paidCash == null || paidCash < 0 || paidCash > total) {
-                return;
-              }
-              request["paid_cash"] = paidCash;
-              String requestString = jsonEncode(request);
-              ServerSocket.instance.write(requestString);
-              //TODO showDialog is not working
-              /*showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FutureBuilder(
-                        future:
-                            ServerSocket.instance.write(requestString),
-                        builder:
-                            (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return SimpleDialog(
-                              backgroundColor: Colors.white,
-                              children: const [AsyncWaiting()],
-                            );
-                          } else if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            Map<String, dynamic> response =
-                                jsonDecode(snapshot.data!);
-                            if (response["status"]) {
-                              return SimpleDialog(
-                                backgroundColor: Colors.white,
-                                children: const [AsyncDone()],
-                              );
-                            }
-                            return SimpleDialog(
-                              backgroundColor: Colors.white,
-                              children: const [AsyncFailed()],
-                            );
-                          } else {
-                            return SimpleDialog(
-                              backgroundColor: Colors.white,
-                              children: const [AsyncFailed()],
-                            );
-                          }
-                        });
-                  });*/
-              Navigator.pop(context, "reset");
-              return;
-            },
           ),
         )
       ],
