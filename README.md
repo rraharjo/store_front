@@ -136,3 +136,26 @@ commands list:
    "status": bool,
    "body": {}
    }
+8. Inventory information:
+   -format: 8 ENDCMD
+   -json:
+   {
+   "main_command": 8
+   }
+   -response:
+   {
+   "status": bool,
+   "body":
+   {
+   "data":
+   [
+   {
+   "dbcode": string,
+   "item_code": string,
+   "name": string,
+   "price": double,
+   },
+
+   ]
+   }
+   }

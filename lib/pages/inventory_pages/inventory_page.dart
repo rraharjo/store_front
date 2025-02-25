@@ -10,5 +10,6 @@ class InventoryGrid extends MainGrid {
     buttons.add(AddInventoryButton());
     buttons.add(ListInventoryButton());
     buttons.add(PurchaseInventoryButton());
+    buttons.add(SellInventoryButton());
   }
 }
