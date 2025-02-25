@@ -79,6 +79,33 @@ class SimpleInputField extends StatelessWidget {
     return TextField(
       controller: _controller,
       decoration: InputDecoration(
+        isDense: true,
+        hintText: hintText,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25))),
+      ),
+    );
+  }
+}
+
+class NumberInputField extends StatelessWidget {
+  final String hintText;
+  final TextEditingController _controller;
+  final bool isInteger;
+
+  const NumberInputField(this._controller,
+      {this.isInteger = false, this.hintText = "", super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      keyboardType: TextInputType.numberWithOptions(
+        signed: true,
+        decimal: isInteger,
+      ),
+      decoration: InputDecoration(
+        isDense: true,
         hintText: hintText,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(25))),

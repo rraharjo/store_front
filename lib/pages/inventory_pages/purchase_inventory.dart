@@ -58,12 +58,12 @@ class InvPopup extends StatefulWidget {
 
 class _InvPopupState extends State<InvPopup> {
   final SearchController _searchController = SearchController();
-  List<dynamic> chosenInventories =
+  List<dynamic> chosenItems =
       <dynamic>[]; //{dbcode, name, price, qty, Controller1, Controller2}
   double total = 0.0;
 
   bool findItem(String dbcode) {
-    for (dynamic d in chosenInventories) {
+    for (dynamic d in chosenItems) {
       if (d["dbcode"] == dbcode) {
         return true;
       }
@@ -98,7 +98,7 @@ class _InvPopupState extends State<InvPopup> {
                     TextEditingController qtyController =
                         TextEditingController();
                     setState(() {
-                      chosenInventories.add({
+                      chosenItems.add({
                         "dbcode": item["dbcode"],
                         "name": item["name"],
                         "price": 0.0,
@@ -122,7 +122,7 @@ class _InvPopupState extends State<InvPopup> {
             child: SingleChildScrollView(
               child: Column(
                 children: List<Widget>.generate(
-                  chosenInventories.length,
+                  chosenItems.length,
                   (idx) {
                     return Material(
                       child: Padding(
@@ -138,10 +138,10 @@ class _InvPopupState extends State<InvPopup> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                chosenInventories[idx]["name"],
+                                chosenItems[idx]["name"],
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              Text(chosenInventories[idx]["dbcode"]),
+                              Text(chosenItems[idx]["dbcode"]),
                             ],
                           ),
                           subtitle: Column(
@@ -161,22 +161,22 @@ class _InvPopupState extends State<InvPopup> {
                                         signed: true,
                                         decimal: true,
                                       ),
-                                      controller: chosenInventories[idx]
+                                      controller: chosenItems[idx]
                                           ["price_controller"],
                                       onChanged: (value) {
                                         int? i = int.tryParse(value);
                                         setState(() {
-                                          total -= chosenInventories[idx]
+                                          total -= chosenItems[idx]
                                                   ["price"] *
-                                              chosenInventories[idx]["qty"];
+                                              chosenItems[idx]["qty"];
                                           if (i == null || i < 0) {
-                                            chosenInventories[idx]["qty"] = 0;
+                                            chosenItems[idx]["qty"] = 0;
                                           } else {
-                                            chosenInventories[idx]["qty"] = i;
+                                            chosenItems[idx]["qty"] = i;
                                           }
-                                          total += chosenInventories[idx]
+                                          total += chosenItems[idx]
                                                   ["price"] *
-                                              chosenInventories[idx]["qty"];
+                                              chosenItems[idx]["qty"];
                                         });
                                       },
                                     ),
@@ -188,23 +188,23 @@ class _InvPopupState extends State<InvPopup> {
                                       decoration: InputDecoration(
                                         isDense: true,
                                       ),
-                                      controller: chosenInventories[idx]
+                                      controller: chosenItems[idx]
                                           ["qty_controller"],
                                       onChanged: (value) {
                                         double? d = double.tryParse(value);
                                         setState(() {
-                                          total -= chosenInventories[idx]
+                                          total -= chosenItems[idx]
                                                   ["price"] *
-                                              chosenInventories[idx]["qty"];
+                                              chosenItems[idx]["qty"];
                                           if (d == null || d < 0.0) {
-                                            chosenInventories[idx]["price"] =
+                                            chosenItems[idx]["price"] =
                                                 0.0;
                                           } else {
-                                            chosenInventories[idx]["price"] = d;
+                                            chosenItems[idx]["price"] = d;
                                           }
-                                          total += chosenInventories[idx]
+                                          total += chosenItems[idx]
                                                   ["price"] *
-                                              chosenInventories[idx]["qty"];
+                                              chosenItems[idx]["qty"];
                                         });
                                       },
                                     ),
@@ -212,7 +212,7 @@ class _InvPopupState extends State<InvPopup> {
                                 ],
                               ),
                               Text(
-                                "Total: \$${chosenInventories[idx]["price"] * chosenInventories[idx]["qty"]}",
+                                "Total: \$${chosenItems[idx]["price"] * chosenItems[idx]["qty"]}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               )
                             ],
@@ -220,9 +220,9 @@ class _InvPopupState extends State<InvPopup> {
                           trailing: IconButton(
                             onPressed: () {
                               setState(() {
-                                total -= chosenInventories[idx]["price"] *
-                                    chosenInventories[idx]["qty"];
-                                chosenInventories.removeAt(idx);
+                                total -= chosenItems[idx]["price"] *
+                                    chosenItems[idx]["qty"];
+                                chosenItems.removeAt(idx);
                               });
                             },
                             icon: Icon(
@@ -251,11 +251,11 @@ class _InvPopupState extends State<InvPopup> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          PurchaseConfirmPage(chosenInventories)),
+                          PurchaseConfirmPage(chosenItems)),
                 );
                 if (fromNext != null) {
                   setState(() {
-                    chosenInventories.clear();
+                    chosenItems.clear();
                     total = 0;
                   });
                 }
