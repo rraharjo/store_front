@@ -159,3 +159,30 @@ commands list:
    ]
    }
    }
+9. Assets information:
+   -format: 9 ENDCMD
+   -json:
+   {
+   "main_command": 9
+   }
+   -response:
+   {
+   "status": bool,
+   "body":
+   {
+   "data":
+   [
+   {
+   "dbcode": string,
+   "name": string,
+   "cost": double,
+   "residual_value": double,
+   "book_value": double
+   "useful_life": int,
+   "date_purchased": dd/MM/yyyy,
+   "last_depreciation_date": dd/MM/yyyy
+   },
+
+   ]
+   }
+   }
