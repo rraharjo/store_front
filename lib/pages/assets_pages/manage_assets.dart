@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:store_front/pages/assets_pages/capitalize_asset.dart';
+import 'package:store_front/pages/assets_pages/sell_asset.dart';
 import 'package:store_front/pages/pages_structure/page_structure.dart';
 import '../pages_structure/commands_page.dart';
 import '../server_socket.dart';
 import '../pages_structure/async_state.dart';
 import '../constant.dart';
-
 
 //TODO: Add sell asset
 class ManageAssets extends BasicPage {
@@ -119,7 +119,15 @@ class _InventoriesExpansionListState extends State<InventoriesExpansionList> {
                   ),
                   PopupMenuItem(
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SellAsset(curItem),
+                          ),
+                        );
+                      },
                       child: Text("Sell", style: informationTextSytle),
                     ),
                   )

@@ -41,12 +41,12 @@ class InfoTile extends StatelessWidget {
   }
 }
 
-class ReassessAsset extends BasicPage {
+class SellAsset extends BasicPage {
   final Map<String, dynamic> _theAsset;
 
-  const ReassessAsset(this._theAsset, {super.key})
+  const SellAsset(this._theAsset, {super.key})
       : super(
-          "Reassess Asset",
+          "Sell Asset",
           const Placeholder(),
         );
 
@@ -54,35 +54,35 @@ class ReassessAsset extends BasicPage {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(context),
-      body: ReassessAssetContent(_theAsset),
+      body: SellAssetContent(_theAsset),
     );
   }
 }
 
-class ReassessAssetContent extends StatefulWidget {
+class SellAssetContent extends StatefulWidget {
   final Map<String, dynamic> theAsset;
 
-  const ReassessAssetContent(this.theAsset, {super.key});
+  const SellAssetContent(this.theAsset, {super.key});
 
   @override
-  State<ReassessAssetContent> createState() => _ReassessAssetContentState();
+  State<SellAssetContent> createState() => _SellAssetContentState();
 }
 
-class _ReassessAssetContentState extends State<ReassessAssetContent> {
+class _SellAssetContentState extends State<SellAssetContent> {
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _cashPaidController = TextEditingController();
+  final TextEditingController _cashReceivedController = TextEditingController();
   String buttonText = "confirm";
 
   bool validateAmount() {
     double? amt = double.tryParse(_amountController.value.text);
-    double? cashPaid = double.tryParse(_cashPaidController.value.text);
-    if (amt == null || cashPaid == null) {
+    double? cashAmt = double.tryParse(_cashReceivedController.value.text);
+    if (amt == null || cashAmt == null) {
       return false;
     }
-    if (amt <= 0 || cashPaid < 0) {
+    if (amt < 0 || cashAmt < 0) {
       return false;
     }
-    if (amt < cashPaid) {
+    if (amt < cashAmt) {
       return false;
     }
     return true;
@@ -108,9 +108,9 @@ class _ReassessAssetContentState extends State<ReassessAssetContent> {
                     color: themeColor,
                   ),
                 ),
-                InfoTile("Name", "${widget.theAsset["name"]}",
-                    leftInfoColumnFactor, rightInfoColumnFactor),
-                InfoTile("Code", "${widget.theAsset["dbcode"]}",
+                InfoTile("Name", widget.theAsset["name"], leftInfoColumnFactor,
+                    rightInfoColumnFactor),
+                InfoTile("Code", widget.theAsset["dbcode"],
                     leftInfoColumnFactor, rightInfoColumnFactor),
                 InfoTile("Value", "\$${widget.theAsset["cost"]}",
                     leftInfoColumnFactor, rightInfoColumnFactor),
@@ -140,21 +140,20 @@ class _ReassessAssetContentState extends State<ReassessAssetContent> {
               spacing: 10,
               children: [
                 Text(
-                  "Capitalized Amount: \$",
+                  "Selling Price: \$",
                   style:
                       TextStyle(fontWeight: FontWeight.bold, color: themeColor),
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 6,
-                  child: TextField(
-                    controller: _amountController,
-                    decoration: InputDecoration(isDense: true),
-                    keyboardType: TextInputType.numberWithOptions(
-                      signed: true,
-                      decimal: true,
-                    ),
-                  ),
-                )
+                    width: MediaQuery.of(context).size.width / 6,
+                    child: TextField(
+                      controller: _amountController,
+                      decoration: InputDecoration(isDense: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        signed: true,
+                        decimal: true,
+                      ),
+                    ))
               ],
             ),
           ),
@@ -164,21 +163,20 @@ class _ReassessAssetContentState extends State<ReassessAssetContent> {
               spacing: 10,
               children: [
                 Text(
-                  "Cash Paid: \$",
+                  "Cash Received: \$",
                   style:
                       TextStyle(fontWeight: FontWeight.bold, color: themeColor),
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 6,
-                  child: TextField(
-                    controller: _cashPaidController,
-                    decoration: InputDecoration(isDense: true),
-                    keyboardType: TextInputType.numberWithOptions(
-                      signed: true,
-                      decimal: true,
-                    ),
-                  ),
-                )
+                    width: MediaQuery.of(context).size.width / 6,
+                    child: TextField(
+                      controller: _cashReceivedController,
+                      decoration: InputDecoration(isDense: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        signed: true,
+                        decimal: true,
+                      ),
+                    ))
               ],
             ),
           ),
@@ -193,15 +191,16 @@ class _ReassessAssetContentState extends State<ReassessAssetContent> {
                     });
                     return;
                   }
-                  Map<String, dynamic> summary = widget.theAsset;
-                  summary["price"] = double.parse(_amountController.value.text);
-                  summary["cash_paid"] =
-                      double.parse(_cashPaidController.value.text);
+                  Map<String, dynamic> transactionSummary = widget.theAsset;
+                  transactionSummary["price"] =
+                      double.parse(_amountController.value.text);
+                  transactionSummary["cash_received"] =
+                      double.parse(_cashReceivedController.value.text);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          ReassessAssetConfirmation(summary),
+                      builder: (context) =>
+                          SellAssetConfirmation(transactionSummary),
                     ),
                   );
                 },
@@ -221,12 +220,12 @@ class _ReassessAssetContentState extends State<ReassessAssetContent> {
   }
 }
 
-class ReassessAssetConfirmation extends BasicPage {
+class SellAssetConfirmation extends BasicPage {
   final Map<String, dynamic> _transactionSummary;
 
-  const ReassessAssetConfirmation(this._transactionSummary, {super.key})
+  const SellAssetConfirmation(this._transactionSummary, {super.key})
       : super(
-          "Reassess Asset",
+          "Sell Asset",
           const Placeholder(),
         );
 
@@ -234,29 +233,27 @@ class ReassessAssetConfirmation extends BasicPage {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(context),
-      body: ReassessAssetConfirmationContent(_transactionSummary),
+      body: SellAssetConfirmationContent(_transactionSummary),
     );
   }
 }
 
-class ReassessAssetConfirmationContent extends StatefulWidget
+class SellAssetConfirmationContent extends StatefulWidget
     implements HasCommand {
   final Map<String, dynamic> _transactionSummary;
 
-  const ReassessAssetConfirmationContent(this._transactionSummary, {super.key});
+  const SellAssetConfirmationContent(this._transactionSummary, {super.key});
 
   @override
   int getCommand() {
-    return 4;
+    return 6;
   }
 
   @override
-  State<ReassessAssetConfirmationContent> createState() =>
-      _ReassessAssetConfirmationContentState();
+  State<SellAssetConfirmationContent> createState() => _SellAssetConfirmationContentState();
 }
 
-class _ReassessAssetConfirmationContentState
-    extends State<ReassessAssetConfirmationContent> {
+class _SellAssetConfirmationContentState extends State<SellAssetConfirmationContent> {
   String buttonText = "Confirm!";
 
   @override
@@ -279,43 +276,25 @@ class _ReassessAssetConfirmationContentState
                     color: themeColor,
                   ),
                 ),
-                InfoTile("Name", widget._transactionSummary["name"],
-                    leftInfoColumnFactor, rightInfoColumnFactor),
-                InfoTile("Code", widget._transactionSummary["dbcode"],
-                    leftInfoColumnFactor, rightInfoColumnFactor),
+                InfoTile("Name", widget._transactionSummary["name"], leftInfoColumnFactor,
+                    rightInfoColumnFactor),
+                InfoTile("Code", widget._transactionSummary["dbcode"], leftInfoColumnFactor,
+                    rightInfoColumnFactor),
                 InfoTile("Value", "\$${widget._transactionSummary["cost"]}",
                     leftInfoColumnFactor, rightInfoColumnFactor),
-                InfoTile(
-                    "Residual Value",
-                    "\$${widget._transactionSummary["residual_value"]}",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
-                InfoTile(
-                    "Book Value",
-                    "\$${widget._transactionSummary["book_value"]}",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
-                InfoTile(
-                    "Useful Life",
-                    "${widget._transactionSummary["useful_life"]} years",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
-                InfoTile(
-                    "Date Purchased",
-                    "${widget._transactionSummary["date_purchased"]}",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
+                InfoTile("Residual Value", "\$${widget._transactionSummary["residual_value"]}",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
+                InfoTile("Book Value", "\$${widget._transactionSummary["book_value"]}",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
+                InfoTile("Useful Life", "${widget._transactionSummary["useful_life"]} years",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
+                InfoTile("Date Purchased", "${widget._transactionSummary["date_purchased"]}",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
                 Text(""),
-                InfoTile(
-                    "Selling Price",
-                    "\$${widget._transactionSummary["price"]}",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
-                InfoTile(
-                    "Cash Paid",
-                    "\$${widget._transactionSummary["cash_paid"]}",
-                    leftInfoColumnFactor,
-                    rightInfoColumnFactor),
+                InfoTile("Selling Price", "\$${widget._transactionSummary["price"]}",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
+                InfoTile("Cash Received", "\$${widget._transactionSummary["cash_received"]}",
+                    leftInfoColumnFactor, rightInfoColumnFactor),
               ],
             ),
           ),
@@ -326,21 +305,18 @@ class _ReassessAssetConfirmationContentState
                 onPressed: () async {
                   Map<String, dynamic> request = <String, dynamic>{};
                   request["main_command"] = widget.getCommand();
-                  request["date"] =
-                      DateFormat("dd/MM/yyyy").format(DateTime.now());
+                  request["date"] = DateFormat("dd/MM/yyyy").format(DateTime.now());
                   request["dbcode"] = widget._transactionSummary["dbcode"];
-                  request["cost"] = widget._transactionSummary["price"];
-                  request["paid_cash"] =
-                      widget._transactionSummary["cash_paid"];
-                  String? resString =
-                      await ServerSocket.instance.write(jsonEncode(request));
-                  if (resString == null) {
+                  request["price"] = widget._transactionSummary["price"];
+                  request["paid_cash"] = widget._transactionSummary["cash_received"];
+                  String? resString = await ServerSocket.instance.write(jsonEncode(request));
+                  if (resString == null){
                     setState(() {
                       buttonText = "Failed";
                     });
                   }
-                  Map<String, dynamic> response = jsonDecode(resString!);
-                  if (response["status"]) {
+                  Map<String,dynamic> response = jsonDecode(resString!);
+                  if (response["status"]){
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -350,7 +326,8 @@ class _ReassessAssetConfirmationContentState
                         builder: (context) => ManageAssets(),
                       ),
                     );
-                  } else {
+                  }
+                  else{
                     setState(() {
                       buttonText = "Failed";
                     });
