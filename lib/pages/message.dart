@@ -14,7 +14,7 @@ class OutboundMessage {
     Uint8List payloadBytes = Uint8List.fromList(utf8.encode(payloadSource));
 
     // Set header length to the size of the header (32 bytes)
-    headerLen = 32;
+    headerLen = 19;
 
     // Set payload length
     payloadLen = payloadBytes.length;
@@ -26,11 +26,11 @@ class OutboundMessage {
   // Method to generate the full packet with header
   Uint8List toStream() {
     // Create a ByteData object to construct the header (8 + 8 + 8 + 8 bytes = 32 bytes)
-    ByteData headerData = ByteData(32);
+    ByteData headerData = ByteData(19);
     headerData.setUint16(0, hHeader, Endian.little);
-    headerData.setUint64(8, headerLen, Endian.little);
-    headerData.setUint64(16, payloadLen, Endian.little);
-    headerData.setUint8(24, flags);
+    headerData.setUint64(2, headerLen, Endian.little);
+    headerData.setUint64(10, payloadLen, Endian.little);
+    headerData.setUint8(18, flags);
 
     // Combine the header and payload into one stream
     Uint8List headerBytes = headerData.buffer.asUint8List();
@@ -43,7 +43,7 @@ class OutboundMessage {
 }
 
 class InboundMessage {
-  static const int headerSize = 32; // Header size in bytes
+  static const int headerSize = 19; // Header size in bytes
   static const int validHeaderValue = 0x5555; // Expected hHeader value
   int? hHeader;
   int? headerLen;
@@ -61,14 +61,14 @@ class InboundMessage {
     // Extract the header (using host byte order)
     ByteData headerData = ByteData.sublistView(message);
     hHeader = headerData.getUint16(0, Endian.little); // Host format (little-endian)
-    headerLen = headerData.getUint64(8, Endian.little); // Header length
-    payloadLen = headerData.getUint64(16, Endian.little); // Expected payload length
-    flags = headerData.getUint64(24, Endian.little); // Flags
-    print("Header: " + hHeader.toString());
-    print(headerLen);
-    print(payloadLen);
-    print(flags);
-    print("valid header: "+validHeaderValue.toString());
+    headerLen = headerData.getUint64(2, Endian.little); // Header length
+    payloadLen = headerData.getUint64(10, Endian.little); // Expected payload length
+    flags = headerData.getUint64(18, Endian.little); // Flags
+    // print("Header: " + hHeader.toString());
+    // print(headerLen);
+    // print(payloadLen);
+    // print(flags);
+    // print("valid header: "+validHeaderValue.toString());
 
     // Validate hHeader
     if (hHeader != validHeaderValue) {
