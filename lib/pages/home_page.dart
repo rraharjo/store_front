@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<bool> connectStatus = ServerSocket.instance.connect();
+  //Future<bool> connectStatus = ServerSocket.instance.connect();
 
   int _idx = 0;
   static List<Widget> functionalWidgets = <Widget>[
@@ -65,6 +65,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(future: connectStatus, builder: builder);
+    return Scaffold(
+      body: Center(
+        child: functionalWidgets.elementAt(_idx),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: navBarItems,
+        onTap: _changeIdx,
+        currentIndex: _idx,
+        backgroundColor: Colors.blue[600],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.lightBlueAccent[100],
+      ),
+    );
   }
 }

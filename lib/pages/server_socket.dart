@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'message.dart';
+
+import 'package:store_front/pages/message.dart';
 String sampleJson = "{\"status\":true,\"body\":{\"data\":[]}}";
 
 class ServerSocket {
@@ -18,12 +22,13 @@ class ServerSocket {
   }
 
   Future<String> _read() async {
+    InboundMessage inMsg = InboundMessage();
     String toRet = "";
     Timer failingTimer = Timer(Duration(seconds: 5), () {
       Map<String, dynamic> errorMsg = {"status": false};
       toRet = jsonEncode(errorMsg);
     });
-    while (toRet == "") {
+    while (!inMsg.complete()) {
       if (sBuffer.isNotEmpty){
         toRet = sBuffer.toString();
         sBuffer.clear();
@@ -36,24 +41,36 @@ class ServerSocket {
     return toRet;
   }
 
-  Future<bool> connect() async {
-    try {
-      if (serverSock == null) {
-        serverSock = await Socket.connect(_ipAddress, _port);
-        serverSock!.listen((data) {
-          sBuffer.write(String.fromCharCodes(data));
-        });
-      }
-    } catch (_) {
-      return false;
-    }
-    return true;
-  }
-
   Future<String?> write(String argument) async {
-    String? toRet = "";
-    serverSock!.write(argument);
-    toRet = await _read();
-    return toRet;
+    OutboundMessage out = OutboundMessage(argument);
+    InboundMessage inMsg = InboundMessage();
+    String? toReturn;
+    // Connect to the server
+    Socket socket = await Socket.connect(_ipAddress, _port);
+
+    // Write a request to the server (optional, depends on your use case)
+    socket.write(utf8.decode(out.toStream()));
+
+    // Completer to return the final complete message
+    Completer<String> completer = Completer<String>();
+
+    // Listen for incoming data
+    socket.listen((List<int> data) {
+      // Add incoming data to the buffer
+      inMsg.processSegment(Uint8List.fromList(data));
+
+      // If the expected length is known, check if the message is complete
+      if (inMsg.complete()) {
+        // Combine the buffer and decode the message
+        completer.complete(inMsg.getPayloadAsString());
+        socket.destroy(); // Close the socket
+      }
+    }, onDone: () {
+      // If the length is not known, return all data in the buffer
+        //completer.complete(inMsg.getPayloadAsString());
+        socket.destroy(); // Close the socket
+    });
+
+    return completer.future;
   }
 }
